@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "106068738993",
+    "project_id": "student-login-9eb41",
+    "storage_bucket": "student-login-9eb41.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106068738993:android:e3b24bc6c7ae704745b390",
+        "android_client_info": {
+          "package_name": "com.example.firebase_studentdata"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARwwOQowG9RhIoMJOf_zfH4EhfpquhcnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
