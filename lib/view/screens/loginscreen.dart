@@ -2,7 +2,6 @@ import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
 import 'package:firebase_studentdata/view/screens/home_screen.dart';
 import 'package:firebase_studentdata/view/screens/signupscreen.dart';
 import 'package:firebase_studentdata/view/widgets/button1.dart';
-import 'package:firebase_studentdata/view/widgets/loading_indicator.dart';
 import 'package:firebase_studentdata/view/widgets/textfield1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +24,12 @@ class Loginscreen extends StatelessWidget {
   final TextEditingController _emailcontroller = TextEditingController();
   final TextEditingController _passwordcontroller = TextEditingController();
 
+  final regemail = RegExp(r"^[a-zA-Z0-9_\-\.\S]{4,}[@][a-z]+[\.][a-z]{2,3}$");
+
+  final paswd =
+      RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+
+  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     
@@ -33,7 +38,7 @@ class Loginscreen extends StatelessWidget {
         final AuthBlocBlo = BlocProvider.of<AuthBlocBloc>(context);
         if (state is AuthLoading) {
           // loadingsheet(context);
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -41,7 +46,7 @@ class Loginscreen extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (_) => Homescreenwrapper()),
+                MaterialPageRoute(builder: (_) => const Homescreenwrapper()),
                 (route) => false);
           });
         }
@@ -53,100 +58,118 @@ class Loginscreen extends StatelessWidget {
             ),
           ),
           body: SingleChildScrollView(
-            child: Column(
-              children: [
-                SvgPicture.asset("assets/splsh.svg"),
-                const Text(
-                  "Login",
-                  style: TextStyle(fontSize: 26),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  padding: const EdgeInsets.all(30),
-                  child: Column(
-                    children: [
-                      Textfield1(
-                        controller: _emailcontroller,
-                        icon1: Icon(Icons.email),
-                        hint: "Email",
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Textfield1(
-                        controller: _passwordcontroller,
-                        hint: "Password",
-                        icon1: Icon(Icons.lock),
-                      ),
-                      button1(
-                          btntext: "Login",
-                          onpressed: () {
-                            AuthBlocBlo.add(LoginEvent(
-                                email: _emailcontroller.text,
-                                password: _passwordcontroller.text));
-                          }),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text("Don't have any account"),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) =>
-                                          const SignupscreenWrapper()));
-                            },
-                            child: const Text(
-                              "Sign up",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 7,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * .37,
-                            child: const Divider(
-                              color: Colors.black,
-                            ),
-                          ),
-                          const Text(
-                            " OR ",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * .37,
-                            child: const Divider(
-                              color: Colors.black,
-                            ),
-                          )
-                        ],
-                      ),
-                      GestureDetector(
-                          onTap: () {},
-                          child: Image.asset(
-                            "assets/4299203.webp",
-                            scale: 6,
-                          ))
-                    ],
+            child: Form(key: formKey,autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                children: [
+                  SvgPicture.asset("assets/splsh.svg"),
+                  const Text(
+                    "Login",
+                    style: TextStyle(fontSize: 26),
                   ),
-                )
-              ],
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(30),
+                    child: Column(
+                      children: [
+                        Textfield1( validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "please enter a email";
+                          } else if (!regemail.hasMatch(value)) {
+                            return "please enter a valid email";
+                          } else {
+                            return null;
+                          }
+                        },
+                          controller: _emailcontroller,
+                          icon1: const Icon(Icons.email),
+                          hint: "Email",
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Textfield1( validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "please enter a password";
+                        } else if (!paswd.hasMatch(value)) {
+                          return 'Password should contain at least one upper case, \n one lower case, one digit, one special character and \n must be 8 characters in length';
+                        } else {
+                          return null;
+                        }
+                      },
+                          controller: _passwordcontroller,
+                          hint: "Password",
+                          icon1: const Icon(Icons.lock),
+                        ),
+                        button1(
+                            btntext: "Login",
+                            onpressed: () {
+                              AuthBlocBlo.add(LoginEvent(
+                                  email: _emailcontroller.text,
+                                  password: _passwordcontroller.text));
+                            }),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text("Don't have any account"),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            const SignupscreenWrapper()));
+                              },
+                              child: const Text(
+                                "Sign up",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 7,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * .37,
+                              child: const Divider(
+                                color: Colors.black,
+                              ),
+                            ),
+                            const Text(
+                              " OR ",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * .37,
+                              child: const Divider(
+                                color: Colors.black,
+                              ),
+                            )
+                          ],
+                        ),
+                        GestureDetector(
+                            onTap: () {},
+                            child: Image.asset(
+                              "assets/4299203.webp",
+                              scale: 6,
+                            ))
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         );
-        ;
+        
       },
     );
   }

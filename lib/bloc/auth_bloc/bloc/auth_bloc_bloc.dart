@@ -31,11 +31,11 @@ class AuthBlocBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
       emit(AuthLoading());
 
       try {
-        final UserCredential = await _auth.createUserWithEmailAndPassword(
+        final userCredential = await _auth.createUserWithEmailAndPassword(
             email: event.user.email.toString(),
             password: event.user.password.toString());
 
-        final user = UserCredential.user;
+        final user = FirebaseAuth.instance.currentUser;
 
         if (user != null) {
           StudentModel studentmode = StudentModel(
@@ -58,30 +58,22 @@ class AuthBlocBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
         emit(AuthenticatedError(message: e.toString()));
       }
     });
-   on<LoginEvent>((event, emit)async {
+    on<LoginEvent>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        final userCredential = await _auth.signInWithEmailAndPassword(
+            email: event.email, password: event.password);
 
-
-    emit(AuthLoading());
-    try{
-      final UserCredential = await _auth.signInWithEmailAndPassword(email: event.email, password: event.password);
-
-      final user =UserCredential.user;
-      if(user!=null){
-        emit(Authenticated(user));
-
-      }else{
-        emit(UnAuthenticated());
+        final user = userCredential.user;
+        if (user != null) {
+          emit(Authenticated(user));
+        } else {
+          emit(UnAuthenticated());
+        }
+      } catch (e) {
+        emit(AuthenticatedError(message: e.toString()));
       }
-  
-    }
-    catch(e){
-      emit(AuthenticatedError(message: e.toString()));
-    }
-   });
-
-
-
-
+    });
 
     on<LogoutEvent>((event, emit) async {
       try {
@@ -89,6 +81,47 @@ class AuthBlocBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
         emit(UnAuthenticated());
       } catch (e) {
         emit(AuthenticatedError(message: e.toString()));
+      }
+    });
+
+    on<UpdateEvent>((event, emit) async {
+      final studentmodes = StudentModel(
+        age: event.user.age,
+        email: event.user.email,
+        username: event.user.username,
+        school: event.user.school,
+        phone: event.user.phone,
+        uid: event.user.uid,
+        image: event.user.image
+      ).toMap();
+      try {
+        FirebaseFirestore.instance
+            .collection("students")
+            .doc(event.user.uid)
+            .update(studentmodes);
+        emit(UpdateState());
+      } catch (e) {
+        emit(UpdationError(msg: e.toString()));
+      }
+    });
+
+    on<DeletedEvent>((event, emit) {
+      try {
+        User? user = FirebaseAuth.instance.currentUser;
+        AuthCredential UserCredential = EmailAuthProvider.credential(
+            email: event.email, password: event.password);
+
+        user!.reauthenticateWithCredential(UserCredential).then((value) {
+          value.user!.delete().then((value) {
+            FirebaseFirestore.instance
+                .collection("students")
+                .doc(user.uid)
+                .delete();
+            emit(Deletedstate());
+          });
+        });
+      } catch (e) {
+        emit(DeletedErrorstate(msg: e.toString()));
       }
     });
   }

@@ -2,7 +2,6 @@ import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart
 import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
 import 'package:firebase_studentdata/view/screens/home_screen.dart';
 import 'package:firebase_studentdata/view/screens/loginscreen.dart';
-import 'package:firebase_studentdata/view/screens/signupscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,7 +14,7 @@ class SplashScreenWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthBlocBloc()..add(CheckLoginStatusEvent()),
-      child: Splashscreen(),
+      child: const Splashscreen(),
     );
   }
 }

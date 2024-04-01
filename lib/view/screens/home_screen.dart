@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
 import 'package:firebase_studentdata/view/screens/loginscreen.dart';
+import 'package:firebase_studentdata/view/screens/profilepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,267 +12,361 @@ class Homescreenwrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthBlocBloc(),
-      child: const Homescreen(),
-    );
+        create: (context) => AuthBlocBloc(),
+        child: BlocBuilder<AuthBlocBloc, AuthBlocState>(
+          builder: (context, state) {
+            return Homescreen();
+          },
+        ));
   }
 }
 
-class Homescreen extends StatelessWidget {
+class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
+
+  @override
+  State<Homescreen> createState() => _HomescreenState();
+}
+
+class _HomescreenState extends State<Homescreen> {
+   User? user ;
+  @override
+  void initState() {
+    super.initState();
+    user= FirebaseAuth.instance.currentUser;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Color.fromARGB(255, 93, 201, 173),
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.input_rounded,
-            ),
-            onPressed: () {
-              final AuthBlocBlo = BlocProvider.of<AuthBlocBloc>(context);
-              AuthBlocBlo.add(LogoutEvent());
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const Loginscreenwrapp()),
-                  (route) => false);
-            },
-          )
-        ],
-        title: Text("Home"),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 93, 201, 173),
-      ),
-      drawer: Drawer(
-          width: 250,
-          backgroundColor: Colors.grey[200],
-          child: ListView(
-            padding: const EdgeInsets.all(0),
-            children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/back.jpg"), opacity: 0.6),
-                ),
-                child: UserAccountsDrawerHeader(
-                  decoration: BoxDecoration(color: Colors.transparent),
-                  accountName: Text(
-                    " username.toString().toUpperCase()",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  accountEmail: Text(
-                    "userData['email']",
-                  ),
-                  currentAccountPictureSize: Size.square(50),
-                  currentAccountPicture:
-                      // userData['image'] != null
-                      // ? CircleAvatar(
-                      //     radius: 30,
-                      //     backgroundImage:
-                      //         NetworkImage(userData['image']),
-                      //   )
-                      // :
-                      CircleAvatar(
-                    child: Icon(Icons.person_3_outlined),
-                  ),
-                ),
+        // backgroundColor: Color.fromARGB(255, 93, 201, 173),
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.input_rounded,
               ),
-              ListTile(
-                leading: const Icon(Icons.people_outline_outlined),
-                title: const Text(' My users '),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.person_4_outlined),
-                title: const Text(' my profile '),
-                onTap: () {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (_) => const Profilepage()));
-                },
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * .5,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: const Text(' settings '),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    SizedBox(
-                      width: 180,
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          // await signoutdialoge(context);
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("SIGN OUT "),
-                            Icon(Icons.login_outlined)
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ],
-          )),
-      body: Column(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * .37,
-            child: Stack(
+              onPressed: () {
+                final AuthBlocBlo = BlocProvider.of<AuthBlocBloc>(context);
+                AuthBlocBlo.add(LogoutEvent());
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const Loginscreenwrapp()),
+                    (route) => false);
+              },
+            )
+          ],
+          title: const Text("Home"),
+          centerTitle: true,
+          backgroundColor: const Color.fromARGB(255, 93, 201, 173),
+        ),
+        drawer: Drawer(
+            width: 250,
+            backgroundColor: Colors.grey[200],
+            child: ListView(
+              padding: const EdgeInsets.all(0),
               children: [
-                Positioned(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 93, 201, 173),
-                        borderRadius: BorderRadius.vertical(
-                          bottom: Radius.circular(30),
-                        )),
-                    height: MediaQuery.of(context).size.height * .18,
-                  ),
-                ),
-                Positioned(
-                  left: 30,
-                  top: 40,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color.fromARGB(255, 123, 120, 120),
-                            offset: Offset(
-                              0.0,
-                              2.0,
+                StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("students")
+                        .doc(user!.uid)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                            child:
+                                CircularProgressIndicator()); // Show loading indicator while fetching user data
+                      }
+                      if (snapshot.hasData) {
+                        final studentData =
+                            snapshot.data?.data() as Map<String, dynamic>?;
+                        if (studentData != null) {
+                          return DrawerHeader(
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/bck.jpeg"),
+                                  opacity: 0.6),
                             ),
-                            blurRadius: 1.0,
-                            spreadRadius: 0.0,
-                          ), //BoxShadow
-                          BoxShadow(
-                            color: Color.fromARGB(255, 76, 73, 73),
-                            offset: Offset(0, 2),
-                            blurRadius: 1.0,
-                            spreadRadius: 0.0,
-                          ), //BoxShadow
-                        ],
-                        borderRadius: BorderRadius.circular(10),
-                        // color: Color.fromARGB(255,199	,249,	204),
-                        color: Colors.white),
-                    height: MediaQuery.of(context).size.height * 0.3,
-                    width: MediaQuery.of(context).size.width * 0.82,
-                    child: const Column(
-                      children: [
-                        CircleAvatar(child: Icon(Icons.person_4_outlined,size: 40,),backgroundColor: Colors.black12,
-                          radius: 50,
+                            child: UserAccountsDrawerHeader(
+                              decoration:
+                                  const BoxDecoration(color: Colors.transparent),
+                              accountName: Text(
+                                " ${studentData['username']}".toUpperCase(),
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              accountEmail: Text(
+                                studentData['email'],
+                              ),
+                              currentAccountPictureSize: const Size.square(50),
+                              currentAccountPicture:
+                                  studentData['image'] != null
+                                  ? CircleAvatar(
+                                      radius: 30,
+                                      backgroundImage:
+                                          NetworkImage(studentData['image']),
+                                    )
+                                  :
+                                  const CircleAvatar(
+                                child: Icon(Icons.person_3_outlined),
+                              ),
+                            ),
+                          );
+                        }
+                        ;
+                      }
+                      return Container();
+                    }),
+                ListTile(
+                  leading: const Icon(Icons.people_outline_outlined),
+                  title: const Text(' Profile '),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.person_4_outlined),
+                  title: const Text('Athlets'),
+                  onTap: () {
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (_) => const Profilepage()));
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.person_4_outlined),
+                  title: const Text('project'),
+                  onTap: () {
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (_) => const Profilepage()));
+                  },
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * .43,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.settings),
+                        title: const Text(" Result's "),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      SizedBox(
+                        width: 180,
+                        child: OutlinedButton(
+                          onPressed: () async {
+                            // await signoutdialoge(context);
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("SIGN OUT "),
+                              Icon(Icons.login_outlined)
+                            ],
+                          ),
                         ),
-                        Text("Shadil"),
-                        Text("muhammesjadil@gmail.com")
-                      ],
-                    ),
+                      )
+                    ],
                   ),
                 ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: MediaQuery.of(context).size.height * .45,
-              width: MediaQuery.of(context).size.width,
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            )),
+        body: StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection("students")
+                .doc(user!.uid)
+                .snapshots(),
+            builder: (BuildContext context,
+                AsyncSnapshot<DocumentSnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: const CircularProgressIndicator()); // Show loading indicator while fetching user data
+              }
+              if (snapshot.hasData) {
+                final studentData =
+                    snapshot.data?.data() as Map<String, dynamic>?;
+                if (studentData != null) {
+                  return Column(
                     children: [
                       SizedBox(
-                          height: 130,
-                          width: 130,
-                          child: Card(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 187, 229, 218),
-                                  child: Icon(Icons.person_2_outlined),
-                                ),
-                                Text("Profile")
-                              ],
+                        height: MediaQuery.of(context).size.height * .37,
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                    color: Color.fromARGB(255, 93, 201, 173),
+                                    borderRadius: BorderRadius.vertical(
+                                      bottom: Radius.circular(30),
+                                    )),
+                                height:
+                                    MediaQuery.of(context).size.height * .18,
+                              ),
                             ),
-                          )),
-                      SizedBox(
-                          height: 130,
-                          width: 130,
-                          child: Card(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 187, 229, 218),
-                                  child: Icon(Icons.sports),
+                            Positioned(
+                              left: 33,
+                              top: 40,
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color:
+                                            Color.fromARGB(255, 123, 120, 120),
+                                        offset: Offset(
+                                          0.0,
+                                          2.0,
+                                        ),
+                                        blurRadius: 1.0,
+                                        spreadRadius: 0.0,
+                                      ), //BoxShadow
+                                      BoxShadow(
+                                        color: Color.fromARGB(255, 76, 73, 73),
+                                        offset: Offset(0, 2),
+                                        blurRadius: 1.0,
+                                        spreadRadius: 0.0,
+                                      ), //BoxShadow
+                                    ],
+                                    borderRadius: BorderRadius.circular(10),
+                                    // color: Color.fromARGB(255,199	,249,	204),
+                                    color: Colors.white),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.3,
+                                width: MediaQuery.of(context).size.width * 0.82,
+                                child: Column(
+                                  children: [
+                                     (studentData['image']==null)?const CircleAvatar(
+                                      backgroundColor: Colors.black12,
+                                      radius: 50,
+                                      child: Icon(
+                                        Icons.person_4_outlined,
+                                        size: 40,
+                                      ),
+                                    ):CircleAvatar(radius: 50,backgroundImage: NetworkImage(studentData['image']),),
+                                    Text(" ${studentData['username']}"
+                                        .toUpperCase()),
+                                    Text(studentData['email'])
+                                  ],
                                 ),
-                                Text("Athlets")
-                              ],
+                              ),
                             ),
-                          ))
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * .45,
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  SizedBox(
+                                      height: 130,
+                                      width: 130,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      const Profilepagewrapper()));
+                                        },
+                                        child: const Card(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              CircleAvatar(
+                                                backgroundColor: Color.fromARGB(
+                                                    255, 187, 229, 218),
+                                                child: Icon(
+                                                    Icons.person_2_outlined),
+                                              ),
+                                              Text("Profile")
+                                            ],
+                                          ),
+                                        ),
+                                      )),
+                                  SizedBox(
+                                      height: 130,
+                                      width: 130,
+                                      child: GestureDetector(
+                                        child: const Card(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              CircleAvatar(
+                                                backgroundColor: Color.fromARGB(
+                                                    255, 187, 229, 218),
+                                                child: Icon(Icons.sports),
+                                              ),
+                                              Text("Athlets")
+                                            ],
+                                          ),
+                                        ),
+                                      ))
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  SizedBox(
+                                      height: 130,
+                                      width: 130,
+                                      child: GestureDetector(
+                                        child: const Card(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              CircleAvatar(
+                                                backgroundColor: Color.fromARGB(
+                                                    255, 187, 229, 218),
+                                                child: Icon(Icons.graphic_eq),
+                                              ),
+                                              Text("Result's")
+                                            ],
+                                          ),
+                                        ),
+                                      )),
+                                  SizedBox(
+                                      height: 130,
+                                      width: 130,
+                                      child: GestureDetector(
+                                        child: const Card(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              CircleAvatar(
+                                                backgroundColor: Color.fromARGB(
+                                                    255, 187, 229, 218),
+                                                child: Icon(Icons.assignment),
+                                              ),
+                                              Text("Projects")
+                                            ],
+                                          ),
+                                        ),
+                                      ))
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      )
                     ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(
-                          height: 130,
-                          width: 130,
-                          child: Card(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 187, 229, 218),
-                                  child: Icon(Icons.graphic_eq),
-                                ),
-                                Text("Result's")
-                              ],
-                            ),
-                          )),
-                      SizedBox(
-                          height: 130,
-                          width: 130,
-                          child: Card(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 187, 229, 218),
-                                  child: Icon(Icons.assignment),
-                                ),
-                                Text("Projects")
-                              ],
-                            ),
-                          ))
-                    ],
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-    );
+                  );
+                }
+              }
+              return Container();
+            }));
   }
 }

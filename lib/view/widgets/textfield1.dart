@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 class Textfield1 extends StatelessWidget {
-  const Textfield1({super.key, this.icon1, this.hint, this.controller});
+  const Textfield1({super.key, this.icon1, this.hint, this.controller, required String? Function(dynamic value) validator});
   final Icon? icon1;
   final String? hint;
   final TextEditingController? controller;
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return TextFormField(autovalidateMode: AutovalidateMode.onUserInteraction,
       controller: controller,
       decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey),
+          hintStyle: const TextStyle(color: Colors.grey),
           suffixIcon: icon1,
           suffixIconColor: Colors.black54,
           border: const OutlineInputBorder(

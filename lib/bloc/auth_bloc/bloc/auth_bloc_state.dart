@@ -17,10 +17,25 @@ class Authenticated extends AuthBlocState {
 
 class UnAuthenticated extends AuthBlocState {}
 
-
-
-class AuthenticatedError extends AuthBlocState{
+class AuthenticatedError extends AuthBlocState {
   final String message;
 
   AuthenticatedError({required this.message});
+}
+
+class UpdateState extends AuthBlocState {}
+
+class UpdationError extends AuthBlocState {
+  final String msg;
+  UpdationError({
+    required this.msg,
+  });
+}
+
+class Deletedstate extends AuthBlocState {}
+
+class DeletedErrorstate extends AuthBlocState {
+  final String msg;
+
+  DeletedErrorstate({required this.msg});
 }
