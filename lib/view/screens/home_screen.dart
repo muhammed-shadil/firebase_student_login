@@ -66,7 +66,7 @@ class _HomescreenState extends State<Homescreen> {
               },
             )
           ],
-          title: const Text("Home"),
+          title: const Text("STUwelt",style: TextStyle(fontWeight: FontWeight.bold),),
           centerTitle: true,
           backgroundColor: const Color.fromARGB(255, 93, 201, 173),
         ),
@@ -254,8 +254,11 @@ class _HomescreenState extends State<Homescreen> {
                                       ),
                                     ):
                                     CircleAvatar(radius: 50,backgroundImage: NetworkImage(studentData['image']),),
-                                    Text(" ${studentData['username']}"
-                                        .toUpperCase()),
+                                    Padding(
+                                      padding: const EdgeInsets.all(6.0),
+                                      child: Text(" ${studentData['username']}"
+                                          .toUpperCase(),style: TextStyle(fontSize: 20),),
+                                    ),
                                     Text(studentData['email'])
                                   ],
                                 ),

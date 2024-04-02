@@ -97,7 +97,7 @@ class _EditscreenState extends State<Editscreen> {
           }
           return SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.all(10),
               child: BlocBuilder<ImageBloc, ImageState>(
                 builder: (context, state) {
                   return StreamBuilder<DocumentSnapshot>(
@@ -151,7 +151,7 @@ class _EditscreenState extends State<Editscreen> {
                                   )
                                 ]),
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(7.0),
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -168,7 +168,7 @@ class _EditscreenState extends State<Editscreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(7.0),
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -184,16 +184,9 @@ class _EditscreenState extends State<Editscreen> {
                                     icon1: const Icon(Icons.email_outlined),
                                   ),
                                 ),
-                                // Padding(
-                                //   padding: EdgeInsets.all(8.0),
-                                //   child: Textfield1(
-                                //     controller: _passwordcontroller,
-                                //     hint: "password",
-                                //     icon1: Icon(Icons.class_outlined),
-                                //   ),
-                                // ),
+                              
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(7.0),
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -213,7 +206,7 @@ class _EditscreenState extends State<Editscreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(7.0),
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -230,7 +223,7 @@ class _EditscreenState extends State<Editscreen> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(7.0),
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -250,18 +243,20 @@ class _EditscreenState extends State<Editscreen> {
                                 button1(
                                   btntext: "Update",
                                   onpressed: () {
-                                    StudentModel student = StudentModel(
-                                        username: _namecontroller.text,
-                                        // password: _passwordcontroller.text,
-                                        uid: widget.studentDatas['uid'],
-                                        image: widget.studentDatas['image'],
-                                        age: _agecontroller.text,
-                                        email: _emailcontroller.text,
-                                        phone: _phonecontroller.text,
-                                        location:
-                                            widget.studentDatas['location'],
-                                        school: _schoolcontroller.text);
-                                    authbloc.add(UpdateEvent(user: student));
+                                    if (formKey.currentState!.validate()) {
+                                      StudentModel student = StudentModel(
+                                          username: _namecontroller.text,
+                                          // password: _passwordcontroller.text,
+                                          uid: widget.studentDatas['uid'],
+                                          image: widget.studentDatas['image'],
+                                          age: _agecontroller.text,
+                                          email: _emailcontroller.text,
+                                          phone: _phonecontroller.text,
+                                          location:
+                                              widget.studentDatas['location'],
+                                          school: _schoolcontroller.text);
+                                      authbloc.add(UpdateEvent(user: student));
+                                    }
                                   },
                                 )
                               ],

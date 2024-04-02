@@ -70,128 +70,133 @@ class Signupscreen extends StatelessWidget {
             child: Stack(children: [
               Container(
                 padding: const EdgeInsets.all(15),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Textfield1(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "please enter name";
-                          } else if (!name.hasMatch(value)) {
-                            return "enter a valid name";
-                          } else {
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(7.0),
+                        child: Textfield1(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "please enter name";
+                            } else if (!name.hasMatch(value)) {
+                              return "enter a valid name";
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: _namecontroller,
+                          hint: "Name",
+                          icon1: const Icon(Icons.person_4_outlined),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(7.0),
+                        child: Textfield1(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "please enter a valid email";
+                            } else if (!regemail.hasMatch(value)) {
+                              return "please enter a valid email";
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: _emailcontroller,
+                          hint: "Email",
+                          icon1: const Icon(Icons.email_outlined),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(7.0),
+                        child: Textfield1(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "please enter a password";
+                            } else if (!paswd.hasMatch(value)) {
+                              return 'Password should contain at least one upper case, one lower case, one digit, one special character and  must be 8 characters in length';
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: _passwordcontroller,
+                          hint: "password",
+                          icon1: const Icon(Icons.lock_open),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(7.0),
+                        child: Textfield1(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "please enter the age ";
+                            } else if (int.parse(value) < 18) {
+                              return "age is must be above 18";
+                            } else if (!age.hasMatch(value)) {
+                              return "please enter a valid age";
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: _agecontroller,
+                          hint: "Age",
+                          icon1: const Icon(Icons.calendar_view_day_outlined),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(7.0),
+                        child: Textfield1(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "please enter name";
+                            } else if (!name.hasMatch(value)) {
+                              return "enter a valid name";
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: _schoolcontroller,
+                          hint: "school",
+                          icon1: const Icon(Icons.school_outlined),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(7.0),
+                        child: Textfield1(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "please enter phone number";
+                            } else if (value.length > 10) {
+                              return "number must be 10";
+                            } else if (!phonreg.hasMatch(value)) {
+                              return "please enter a valid number";
+                            }
                             return null;
+                          },
+                          controller: _phonecontroller,
+                          hint: "Phone",
+                          icon1: const Icon(Icons.phone),
+                        ),
+                      ),
+                      button1(
+                        btntext: "Sign up",
+                        onpressed: () {
+                          if (formKey.currentState!.validate()) {
+                            StudentModel student = StudentModel(
+                                username: _namecontroller.text,
+                                password: _passwordcontroller.text,
+                                age: _agecontroller.text,
+                                email: _emailcontroller.text,
+                                phone: _phonecontroller.text,
+                                school: _schoolcontroller.text);
+                            AuthBlocBlo.add(SignupEvent(user: student));
+                            // loadingsheet(context);
                           }
                         },
-                        controller: _namecontroller,
-                        hint: "Name",
-                        icon1: const Icon(Icons.person_4_outlined),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Textfield1(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "please enter a valid email";
-                          } else if (!regemail.hasMatch(value)) {
-                            return "please enter a valid email";
-                          } else {
-                            return null;
-                          }
-                        },
-                        controller: _emailcontroller,
-                        hint: "Email",
-                        icon1: const Icon(Icons.email_outlined),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Textfield1(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "please enter a password";
-                          } else if (!paswd.hasMatch(value)) {
-                            return 'Password should contain at least one upper case, one lower case, one digit, one special character and  must be 8 characters in length';
-                          } else {
-                            return null;
-                          }
-                        },
-                        controller: _passwordcontroller,
-                        hint: "password",
-                        icon1: const Icon(Icons.class_outlined),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Textfield1(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "please enter the age ";
-                          } else if (int.parse(value) < 18) {
-                            return "age is must be above 18";
-                          } else if (!age.hasMatch(value)) {
-                            return "please enter a valid age";
-                          } else {
-                            return null;
-                          }
-                        },
-                        controller: _agecontroller,
-                        hint: "Age",
-                        icon1: const Icon(Icons.calendar_view_day_outlined),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Textfield1(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "please enter name";
-                          } else if (!name.hasMatch(value)) {
-                            return "enter a valid name";
-                          } else {
-                            return null;
-                          }
-                        },
-                        controller: _schoolcontroller,
-                        hint: "school",
-                        icon1: const Icon(Icons.school_outlined),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Textfield1(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "please enter phone number";
-                          } else if (value.length > 10) {
-                            return "number must be 10";
-                          } else if (!phonreg.hasMatch(value)) {
-                            return "please enter a valid number";
-                          }
-                          return null;
-                        },
-                        controller: _phonecontroller,
-                        hint: "Phone",
-                        icon1: const Icon(Icons.phone),
-                      ),
-                    ),
-                    button1(
-                      btntext: "Sign up",
-                      onpressed: () {
-                        StudentModel student = StudentModel(
-                            username: _namecontroller.text,
-                            password: _passwordcontroller.text,
-                            age: _agecontroller.text,
-                            email: _emailcontroller.text,
-                            phone: _phonecontroller.text,
-                            school: _schoolcontroller.text);
-                        AuthBlocBlo.add(SignupEvent(user: student));
-                        // loadingsheet(context);
-                      },
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ]),

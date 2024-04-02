@@ -25,6 +25,7 @@ class Deletescreen extends StatelessWidget {
   final paswd =
       RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
 
+  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final authbloc = BlocProvider.of<AuthBlocBloc>(context);
@@ -43,63 +44,68 @@ class Deletescreen extends StatelessWidget {
             });
           }
           return Container(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Textfield1(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "please enter a valid email";
-                      } else if (!regemail.hasMatch(value)) {
-                        return "please enter a valid email";
-                      } else {
-                        return null;
-                      }
-                    },
-                    controller: _emailcontroller,
-                    hint: "Email",
-                    icon1: const Icon(Icons.email_outlined),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Textfield1(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "please enter a password";
-                      } else if (!paswd.hasMatch(value)) {
-                        return 'Password should contain at least one upper case, one lower case, one digit, one special character and  must be 8 characters in length';
-                      } else {
-                        return null;
-                      }
-                    },
-                    controller: _passwordcontroller,
-                    hint: "password",
-                    icon1: const Icon(Icons.class_outlined),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text("cancel")),
-                    const SizedBox(
-                      width: 20,
+            child: Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Textfield1(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "please enter a valid email";
+                        } else if (!regemail.hasMatch(value)) {
+                          return "please enter a valid email";
+                        } else {
+                          return null;
+                        }
+                      },
+                      controller: _emailcontroller,
+                      hint: "Email",
+                      icon1: const Icon(Icons.email_outlined),
                     ),
-                    ElevatedButton(
-                        onPressed: () {
-                          authbloc.add(DeletedEvent(
-                              email: _emailcontroller.text,
-                              password: _passwordcontroller.text));
-                        },
-                        child: const Text("Delete")),
-                  ],
-                )
-              ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Textfield1(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "please enter a password";
+                        } else if (!paswd.hasMatch(value)) {
+                          return 'Password should contain at least one upper case, one lower case, one digit, one special character and  must be 8 characters in length';
+                        } else {
+                          return null;
+                        }
+                      },
+                      controller: _passwordcontroller,
+                      hint: "password",
+                      icon1: const Icon(Icons.class_outlined),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text("cancel")),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              authbloc.add(DeletedEvent(
+                                  email: _emailcontroller.text,
+                                  password: _passwordcontroller.text));
+                            }
+                          },
+                          child: const Text("Delete")),
+                    ],
+                  )
+                ],
+              ),
             ),
           );
         },

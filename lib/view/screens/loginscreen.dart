@@ -32,7 +32,6 @@ class Loginscreen extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    
     return BlocBuilder<AuthBlocBloc, AuthBlocState>(
       builder: (context, state) {
         final AuthBlocBlo = BlocProvider.of<AuthBlocBloc>(context);
@@ -58,7 +57,9 @@ class Loginscreen extends StatelessWidget {
             ),
           ),
           body: SingleChildScrollView(
-            child: Form(key: formKey,autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Form(
+              key: formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: [
                   SvgPicture.asset("assets/splsh.svg"),
@@ -67,37 +68,39 @@ class Loginscreen extends StatelessWidget {
                     style: TextStyle(fontSize: 26),
                   ),
                   const SizedBox(
-                    height: 15,
+                    height: 13,
                   ),
                   Container(
-                    padding: const EdgeInsets.all(30),
+                    padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 20),
                     child: Column(
                       children: [
-                        Textfield1( validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "please enter a email";
-                          } else if (!regemail.hasMatch(value)) {
-                            return "please enter a valid email";
-                          } else {
-                            return null;
-                          }
-                        },
+                        Textfield1(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "please enter a email";
+                            } else if (!regemail.hasMatch(value)) {
+                              return "please enter a valid email";
+                            } else {
+                              return null;
+                            }
+                          },
                           controller: _emailcontroller,
                           icon1: const Icon(Icons.email),
                           hint: "Email",
                         ),
                         const SizedBox(
-                          height: 20,
+                          height: 17,
                         ),
-                        Textfield1( validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "please enter a password";
-                        } else if (!paswd.hasMatch(value)) {
-                          return 'Password should contain at least one upper case, \n one lower case, one digit, one special character and \n must be 8 characters in length';
-                        } else {
-                          return null;
-                        }
-                      },
+                        Textfield1(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "please enter a password";
+                            } else if (!paswd.hasMatch(value)) {
+                              return 'Password should contain at least one upper case, \n one lower case, one digit, one special character and \n must be 8 characters in length';
+                            } else {
+                              return null;
+                            }
+                          },
                           controller: _passwordcontroller,
                           hint: "Password",
                           icon1: const Icon(Icons.lock),
@@ -105,12 +108,14 @@ class Loginscreen extends StatelessWidget {
                         button1(
                             btntext: "Login",
                             onpressed: () {
-                              AuthBlocBlo.add(LoginEvent(
-                                  email: _emailcontroller.text,
-                                  password: _passwordcontroller.text));
+                              if (formKey.currentState!.validate()) {
+                                AuthBlocBlo.add(LoginEvent(
+                                    email: _emailcontroller.text,
+                                    password: _passwordcontroller.text));
+                              }
                             }),
                         const SizedBox(
-                          height: 10,
+                          height: 5,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -134,33 +139,33 @@ class Loginscreen extends StatelessWidget {
                         const SizedBox(
                           height: 7,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .37,
-                              child: const Divider(
-                                color: Colors.black,
-                              ),
-                            ),
-                            const Text(
-                              " OR ",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .37,
-                              child: const Divider(
-                                color: Colors.black,
-                              ),
-                            )
-                          ],
-                        ),
-                        GestureDetector(
-                            onTap: () {},
-                            child: Image.asset(
-                              "assets/4299203.webp",
-                              scale: 6,
-                            ))
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     SizedBox(
+                        //       width: MediaQuery.of(context).size.width * .37,
+                        //       child: const Divider(
+                        //         color: Colors.black,
+                        //       ),
+                        //     ),
+                        //     const Text(
+                        //       " OR ",
+                        //       style: TextStyle(color: Colors.black),
+                        //     ),
+                        //     SizedBox(
+                        //       width: MediaQuery.of(context).size.width * .37,
+                        //       child: const Divider(
+                        //         color: Colors.black,
+                        //       ),
+                        //     )
+                        //   ],
+                        // ),
+                        // GestureDetector(
+                        //     onTap: () {},
+                        //     child: Image.asset(
+                        //       "assets/4299203.webp",
+                        //       scale: 6,
+                        //     ))
                       ],
                     ),
                   )
@@ -169,7 +174,6 @@ class Loginscreen extends StatelessWidget {
             ),
           ),
         );
-        
       },
     );
   }
