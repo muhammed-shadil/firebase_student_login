@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
+import 'package:firebase_studentdata/bloc/notification/notification_serviced.dart';
 import 'package:firebase_studentdata/view/screens/loginscreen.dart';
 import 'package:firebase_studentdata/view/screens/profilepage.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +30,18 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+
+  NotificationServices notificationServices = NotificationServices();
    User? user ;
   @override
   void initState() {
     super.initState();
+     notificationServices.requestNotificationPermission();
+     notificationServices.firebaseInit(context);
+    notificationServices.getDeviceToken().then((value) {
+      print("token");
+      print(value);
+    });
     user= FirebaseAuth.instance.currentUser;
   }
 
@@ -243,7 +252,8 @@ class _HomescreenState extends State<Homescreen> {
                                         Icons.person_4_outlined,
                                         size: 40,
                                       ),
-                                    ):CircleAvatar(radius: 50,backgroundImage: NetworkImage(studentData['image']),),
+                                    ):
+                                    CircleAvatar(radius: 50,backgroundImage: NetworkImage(studentData['image']),),
                                     Text(" ${studentData['username']}"
                                         .toUpperCase()),
                                     Text(studentData['email'])

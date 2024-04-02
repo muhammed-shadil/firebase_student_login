@@ -86,14 +86,15 @@ class AuthBlocBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
 
     on<UpdateEvent>((event, emit) async {
       final studentmodes = StudentModel(
-        age: event.user.age,
-        email: event.user.email,
-        username: event.user.username,
-        school: event.user.school,
-        phone: event.user.phone,
-        uid: event.user.uid,
-        image: event.user.image
-      ).toMap();
+              age: event.user.age,
+              email: event.user.email,
+              username: event.user.username,
+              school: event.user.school,
+              phone: event.user.phone,
+              uid: event.user.uid,
+              image: event.user.image,
+              location: event.user.location)
+          .toMap();
       try {
         FirebaseFirestore.instance
             .collection("students")
@@ -105,19 +106,21 @@ class AuthBlocBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
       }
     });
 
-    on<DeletedEvent>((event, emit) {
+    on<DeletedEvent>((event, emit) async{
       try {
-        User? user = FirebaseAuth.instance.currentUser;
+        User? user = await FirebaseAuth.instance.currentUser;
         AuthCredential UserCredential = EmailAuthProvider.credential(
             email: event.email, password: event.password);
 
-        user!.reauthenticateWithCredential(UserCredential).then((value) {
-          value.user!.delete().then((value) {
-            FirebaseFirestore.instance
+        await user!.reauthenticateWithCredential(UserCredential).then((value)async {
+          await value.user!.delete().then((value) async {
+            await FirebaseFirestore.instance
                 .collection("students")
                 .doc(user.uid)
-                .delete();
-            emit(Deletedstate());
+                .delete()
+                .then((value) {
+              emit(Deletedstate());
+            });
           });
         });
       } catch (e) {

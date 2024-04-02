@@ -109,8 +109,7 @@ class _EditscreenState extends State<Editscreen> {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return const Center(
-                              child:
-                                  CircularProgressIndicator()); // Show loading indicator while fetching user data
+                              child: CircularProgressIndicator());
                         }
                         if (snapshot.hasData) {
                           final studentData =
@@ -143,7 +142,7 @@ class _EditscreenState extends State<Editscreen> {
                                               email: widget
                                                   .studentDatas['email']));
                                         },
-                                        icon: Icon(
+                                        icon: const Icon(
                                           Icons.add_a_photo_outlined,
                                           size: 16,
                                         ),
@@ -259,6 +258,8 @@ class _EditscreenState extends State<Editscreen> {
                                         age: _agecontroller.text,
                                         email: _emailcontroller.text,
                                         phone: _phonecontroller.text,
+                                        location:
+                                            widget.studentDatas['location'],
                                         school: _schoolcontroller.text);
                                     authbloc.add(UpdateEvent(user: student));
                                   },

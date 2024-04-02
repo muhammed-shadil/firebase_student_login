@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
+import 'package:firebase_studentdata/bloc/location_bloc/bloc/fetchlocation_bloc.dart';
 import 'package:firebase_studentdata/view/screens/deletedialoge.dart';
 import 'package:firebase_studentdata/view/screens/editscreen.dart';
 import 'package:firebase_studentdata/view/widgets/listtile.dart';
@@ -12,8 +13,15 @@ class Profilepagewrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthBlocBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthBlocBloc(),
+        ),
+        BlocProvider(
+          create: (context) => FetchlocationBloc(),
+        ),
+      ],
       child: BlocBuilder<AuthBlocBloc, AuthBlocState>(
         builder: (context, state) {
           return Profilepage();
@@ -63,8 +71,8 @@ class _ProfilepageState extends State<Profilepage> {
             if (snapshot.hasData) {
               final studentData =
                   snapshot.data?.data() as Map<String, dynamic>?;
+
               if (studentData != null) {
-                final img = studentData['image'];
                 return SingleChildScrollView(
                   child: Center(
                     child: Column(
@@ -80,7 +88,8 @@ class _ProfilepageState extends State<Profilepage> {
                                 )
                               : CircleAvatar(
                                   radius: 50,
-                                  backgroundImage: NetworkImage(studentData['image']),
+                                  backgroundImage:
+                                      NetworkImage(studentData['image']),
                                 ),
                         ),
                         SizedBox(
@@ -129,6 +138,33 @@ class _ProfilepageState extends State<Profilepage> {
                                       title: "school",
                                       subtitle: studentData['school'],
                                       icon: const Icon(Icons.school),
+                                    ),
+                                    BlocBuilder<FetchlocationBloc,
+                                        FetchlocationState>(
+                                      builder: (context, state) {
+                                        if (state is LocationLoading) {
+                                          return Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        } else if (state is LocationLoaded) {
+                                          return List1(
+                                            title: "loction",
+                                            subtitle: studentData['location'] ??
+                                                state.address,
+                                            icon: const Icon(Icons.location_on),
+                                          );
+                                        }
+                                        return Container();
+                                      },
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        BlocProvider.of<FetchlocationBloc>(
+                                                context)
+                                            .add(FetchLocation(
+                                                email: studentData['email']));
+                                      },
+                                      icon: Icon(Icons.location_on),
                                     ),
                                   ],
                                 ),
