@@ -13,6 +13,7 @@ part 'image_state.dart';
 class ImageBloc extends Bloc<ImageEvent, ImageState> {
   ImageBloc() : super(ImageInitial()) {
     on<Selectimage>((event, emit) async {
+      emit(Uploadimageloading());
       try {
         final ImagePicker _imagePicker = ImagePicker();
         XFile? res = await _imagePicker.pickImage(source: ImageSource.gallery);

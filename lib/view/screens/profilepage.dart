@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
+import 'package:firebase_studentdata/bloc/imagebloc/bloc/image_bloc.dart';
 import 'package:firebase_studentdata/bloc/location_bloc/bloc/fetchlocation_bloc.dart';
 import 'package:firebase_studentdata/view/screens/deletedialoge.dart';
 import 'package:firebase_studentdata/view/screens/editscreen.dart';
@@ -21,10 +22,14 @@ class Profilepagewrapper extends StatelessWidget {
         BlocProvider(
           create: (context) => FetchlocationBloc(),
         ),
+        BlocProvider(
+          create: (context) => ImageBloc(),
+          child: Container(),
+        )
       ],
       child: BlocBuilder<AuthBlocBloc, AuthBlocState>(
         builder: (context, state) {
-          return Profilepage();
+          return const Profilepage();
         },
       ),
     );
@@ -32,7 +37,7 @@ class Profilepagewrapper extends StatelessWidget {
 }
 
 class Profilepage extends StatefulWidget {
-  Profilepage({super.key});
+  const Profilepage({super.key});
 
   @override
   State<Profilepage> createState() => _ProfilepageState();
@@ -49,7 +54,6 @@ class _ProfilepageState extends State<Profilepage> {
 
   @override
   Widget build(BuildContext context) {
-    final authbloc = BlocProvider.of<AuthBlocBloc>(context);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 93, 201, 173),
       appBar: AppBar(
@@ -66,143 +70,184 @@ class _ProfilepageState extends State<Profilepage> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                   child:
-                      CircularProgressIndicator()); // Show loading indicator while fetching user data
+                      CircularProgressIndicator()); 
             }
             if (snapshot.hasData) {
               final studentData =
                   snapshot.data?.data() as Map<String, dynamic>?;
 
               if (studentData != null) {
-                return SingleChildScrollView(
-                  child: Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: (studentData['image'] == null)
-                              ? const CircleAvatar(
-                                  radius: 50,
-                                  backgroundColor: Colors.white,
-                                  child: Icon(Icons.person_4_outlined),
-                                )
-                              : CircleAvatar(
-                                  radius: 50,
-                                  backgroundImage:
-                                      NetworkImage(studentData['image']),
-                                ),
-                        ),
-                        SizedBox(
-                          height: 35,
-                          child: Text(
-                            studentData['username'].toString().toUpperCase(),
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.white,
-                          ),
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.only(
-                                    left: 20, right: 30, top: 17, bottom: 5),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                height:
-                                    MediaQuery.of(context).size.height * .57,
-                                width: MediaQuery.of(context).size.width,
-                                child: ListView(
-                                  children: [
-                                    List1(
-                                      title: "Email",
-                                      subtitle: studentData['email'],
-                                      icon: const Icon(Icons.email_outlined),
-                                    ),
-                                    List1(
-                                      title: "Phone",
-                                      subtitle: studentData['phone'],
-                                      icon: const Icon(Icons.phone_android),
-                                    ),
-                                    List1(
-                                      title: "age",
-                                      subtitle: studentData['age'],
-                                      icon: const Icon(
-                                          Icons.calendar_month_outlined),
-                                    ),
-                                    List1(
-                                      title: "school",
-                                      subtitle: studentData['school'],
-                                      icon: const Icon(Icons.school),
-                                    ),
-                                    BlocBuilder<FetchlocationBloc,
-                                        FetchlocationState>(
-                                      builder: (context, state) {
-                                        if (state is LocationLoading) {
-                                          return Center(
-                                            child: CircularProgressIndicator(),
-                                          );
-                                        } else if (state is LocationLoaded) {
-                                          return List1(
-                                            title: "loction",
-                                            subtitle: studentData['location'] ??
-                                                state.address,
-                                            icon: const Icon(Icons.location_on),
-                                          );
-                                        }
-                                        return Container();
-                                      },
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        BlocProvider.of<FetchlocationBloc>(
-                                                context)
-                                            .add(FetchLocation(
-                                                email: studentData['email']));
-                                      },
-                                      icon: Icon(Icons.location_on),
-                                    ),
-                                  ],
-                                ),
+                return BlocBuilder<ImageBloc, ImageState>(
+                  builder: (context, state) {
+                    return SingleChildScrollView(
+                      child: Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: (studentData['image'] == null)
+                                  ? const CircleAvatar(
+                                      radius: 50,
+                                      backgroundColor: Colors.white,
+                                      child: Icon(Icons.person_4_outlined),
+                                    )
+                                  : (state is Uploadimageloading)
+                                      ? const CircleAvatar(
+                                          radius: 40,
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : CircleAvatar(
+                                          radius: 50,
+                                          backgroundImage: NetworkImage(
+                                              studentData['image']),
+                                        ),
+                            ),
+                            SizedBox(
+                              height: 35,
+                              child: Text(
+                                studentData['username']
+                                    .toString()
+                                    .toUpperCase(),
+                                style: const TextStyle(
+                                    fontSize: 20, color: Colors.white),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.white,
+                              ),
+                              child: Column(
                                 children: [
-                                  ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    Deletescreenwrapper()));
-                                      },
-                                      child: const Text("Delete")),
-                                  const SizedBox(
-                                    width: 20,
+                                  Container(
+                                    padding: const EdgeInsets.only(
+                                        left: 20,
+                                        right: 30,
+                                        top: 17,
+                                        bottom: 5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    height: MediaQuery.of(context).size.height *
+                                        .57,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: ListView(
+                                      children: [
+                                        List1(
+                                          title: "Email",
+                                          subtitle: studentData['email'],
+                                          icon:
+                                              const Icon(Icons.email_outlined),
+                                        ),
+                                        List1(
+                                          title: "Phone",
+                                          subtitle: studentData['phone'],
+                                          icon: const Icon(Icons.phone_android),
+                                        ),
+                                        List1(
+                                          title: "age",
+                                          subtitle: studentData['age'],
+                                          icon: const Icon(
+                                              Icons.calendar_month_outlined),
+                                        ),
+                                        List1(
+                                          title: "school",
+                                          subtitle: studentData['school'],
+                                          icon: const Icon(Icons.school),
+                                        ),
+                                        BlocListener<FetchlocationBloc,
+                                            FetchlocationState>(
+                                          listener: (context, state) {
+                                            if (state is LocationLoading) {
+                                              const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            }
+                                          },
+                                          child: studentData['location'] == null
+                                              ? BlocBuilder<FetchlocationBloc,
+                                                  FetchlocationState>(
+                                                  builder: (context, state) {
+                                                    if (state
+                                                        is LocationLoading) {
+                                                      return const Center(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                      );
+                                                    } else if (state
+                                                        is LocationLoaded) {
+                                                      return List1(
+                                                        title: "loction",
+                                                        subtitle: studentData[
+                                                                'location'] ??
+                                                            state.address,
+                                                        icon: const Icon(
+                                                            Icons.location_on),
+                                                      );
+                                                    }
+                                                    return Container();
+                                                  },
+                                                )
+                                              : List1(
+                                                  title: "location",
+                                                  subtitle:
+                                                      studentData['location'],
+                                                  icon: const Icon(
+                                                      Icons.location_on),
+                                                ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            BlocProvider.of<FetchlocationBloc>(
+                                                    context)
+                                                .add(FetchLocation(
+                                                    email:
+                                                        studentData['email']));
+                                          },
+                                          icon: const Icon(Icons.location_on),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    Editscreenwrapper(
-                                                      studentDatas: studentData,
-                                                    )));
-                                      },
-                                      child: const Text("Edit")),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      OutlinedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        const Deletescreenwrapper()));
+                                          },
+                                          child: const Text("Delete")),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      OutlinedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        Editscreenwrapper(
+                                                          studentDatas:
+                                                              studentData,
+                                                        )));
+                                          },
+                                          child: const Text("Edit")),
+                                    ],
+                                  )
                                 ],
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 );
               }
             }

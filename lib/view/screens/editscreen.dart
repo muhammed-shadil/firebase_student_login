@@ -41,31 +41,20 @@ class Editscreen extends StatefulWidget {
 
 class _EditscreenState extends State<Editscreen> {
   final TextEditingController _emailcontroller = TextEditingController();
-
-  // final TextEditingController _passwordcontroller = TextEditingController();
-
   final TextEditingController _namecontroller = TextEditingController();
-
   final TextEditingController _phonecontroller = TextEditingController();
-
   final TextEditingController _agecontroller = TextEditingController();
-
-  // final TextEditingController _classwordcontroller = TextEditingController();
   final TextEditingController _schoolcontroller = TextEditingController();
+
   final regemail = RegExp(r"^[a-zA-Z0-9_\-\.\S]{4,}[@][a-z]+[\.][a-z]{2,3}$");
-
   final phonreg = RegExp(r"^[6789]\d{9}$");
-
   final paswd =
       RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-
   final name = RegExp(r'^[A-Za-z]+$');
-
-  final age = RegExp(r"^[0-9]{1,2}$");
-
-  final formKey = GlobalKey<FormState>();
-
+  final age = RegExp(r'^(1[0-9]|[2-9][0-9]|100)$');
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final user = FirebaseAuth.instance.currentUser!;
+
   @override
   void initState() {
     _emailcontroller.text = widget.studentDatas['email'];
@@ -88,48 +77,97 @@ class _EditscreenState extends State<Editscreen> {
         ),
         centerTitle: true,
       ),
-      body: BlocBuilder<AuthBlocBloc, AuthBlocState>(
-        builder: (context, state) {
-          if (state is UpdateState) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pop(context);
-            });
-          }
-          return SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              child: BlocBuilder<ImageBloc, ImageState>(
-                builder: (context, state) {
-                  return StreamBuilder<DocumentSnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection("students")
-                          .doc(user.uid)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        if (snapshot.hasData) {
-                          final studentData =
-                              snapshot.data?.data() as Map<String, dynamic>?;
-                          if (studentData != null) {
-                            return Column(
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<ImageBloc, ImageState>(
+                listener: (context, state) {
+                  if (state is uploadimagesucces) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Image is uploaded"),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  } else if (state is Uploadimagefailure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Error!!,//${state.msg}"),
+                        backgroundColor: Colors.red[300],
+                      ),
+                    );
+                  }
+                },
+              ),
+              BlocListener<AuthBlocBloc, AuthBlocState>(
+                listener: (context, state) {
+                  if (state is UpdateState) {
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Details updated successfully"),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  } else if (state is UpdationError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Error!!${state.msg}"),
+                        backgroundColor: Colors.red[300],
+                      ),
+                    );
+                  }
+                },
+              ),
+            ],
+            child: BlocBuilder<ImageBloc, ImageState>(
+              builder: (context, state) {
+                return StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("students")
+                        .doc(user.uid)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasData) {
+                        final studentData =
+                            snapshot.data?.data() as Map<String, dynamic>?;
+                        if (studentData != null) {
+                          return Form(
+                            key: formKey,
+                            child: Column(
                               children: [
                                 Stack(children: [
                                   (widget.studentDatas['image'] == null)
-                                      ? const CircleAvatar(
-                                          backgroundColor: Color.fromARGB(
-                                              255, 201, 201, 201),
-                                          radius: 40,
-                                          child: Icon(Icons.person_4_outlined),
-                                        )
-                                      : CircleAvatar(
-                                          radius: 40,
-                                          backgroundImage: NetworkImage(
-                                              studentData['image']),
-                                        ),
+                                      ? (state is Uploadimageloading)
+                                          ? const CircleAvatar(
+                                              radius: 40,
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            )
+                                          : const CircleAvatar(
+                                              backgroundColor: Color.fromARGB(
+                                                  255, 201, 201, 201),
+                                              radius: 40,
+                                              child:
+                                                  Icon(Icons.person_4_outlined),
+                                            )
+                                      : (state is Uploadimageloading)
+                                          ? const CircleAvatar(
+                                              radius: 40,
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            )
+                                          : CircleAvatar(
+                                              radius: 40,
+                                              backgroundImage: NetworkImage(
+                                                  studentData['image']),
+                                            ),
                                   Positioned(
                                     right: 0,
                                     bottom: 0,
@@ -155,9 +193,9 @@ class _EditscreenState extends State<Editscreen> {
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return "please enter name";
+                                        return "Please enter name";
                                       } else if (!name.hasMatch(value)) {
-                                        return "enter a valid name";
+                                        return "Enter a valid name";
                                       } else {
                                         return null;
                                       }
@@ -172,9 +210,9 @@ class _EditscreenState extends State<Editscreen> {
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return "please enter a valid email";
+                                        return "Please enter a valid email";
                                       } else if (!regemail.hasMatch(value)) {
-                                        return "please enter a valid email";
+                                        return "Please enter a valid email";
                                       } else {
                                         return null;
                                       }
@@ -184,17 +222,14 @@ class _EditscreenState extends State<Editscreen> {
                                     icon1: const Icon(Icons.email_outlined),
                                   ),
                                 ),
-                              
                                 Padding(
                                   padding: const EdgeInsets.all(7.0),
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return "please enter the age ";
-                                      } else if (int.parse(value) < 18) {
-                                        return "age is must be above 18";
+                                        return "Please enter the age ";
                                       } else if (!age.hasMatch(value)) {
-                                        return "please enter a valid age";
+                                        return "Please enter a valid age";
                                       } else {
                                         return null;
                                       }
@@ -210,9 +245,9 @@ class _EditscreenState extends State<Editscreen> {
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return "please enter name";
+                                        return "Please enter schoolname";
                                       } else if (!name.hasMatch(value)) {
-                                        return "enter a valid name";
+                                        return "Enter a valid schoolname";
                                       } else {
                                         return null;
                                       }
@@ -227,11 +262,11 @@ class _EditscreenState extends State<Editscreen> {
                                   child: Textfield1(
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return "please enter phone number";
+                                        return "Please enter phone number";
                                       } else if (value.length > 10) {
-                                        return "number must be 10";
+                                        return "Number must be 10";
                                       } else if (!phonreg.hasMatch(value)) {
-                                        return "please enter a valid number";
+                                        return "Please enter a valid number";
                                       }
                                       return null;
                                     },
@@ -260,16 +295,16 @@ class _EditscreenState extends State<Editscreen> {
                                   },
                                 )
                               ],
-                            );
-                          }
+                            ),
+                          );
                         }
-                        return Container();
-                      });
-                },
-              ),
+                      }
+                      return Container();
+                    });
+              },
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

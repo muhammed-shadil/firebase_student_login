@@ -14,9 +14,19 @@ class Homescreenwrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => AuthBlocBloc(),
-        child: BlocBuilder<AuthBlocBloc, AuthBlocState>(
+        child: BlocConsumer<AuthBlocBloc, AuthBlocState>(
+          listener: (context, state) {
+            if (state is UnAuthenticated) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Sign out"),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            }
+          },
           builder: (context, state) {
-            return Homescreen();
+            return const Homescreen();
           },
         ));
   }
@@ -30,25 +40,26 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
-
   NotificationServices notificationServices = NotificationServices();
-   User? user ;
+  User? user;
+
   @override
   void initState() {
     super.initState();
-     notificationServices.requestNotificationPermission();
-     notificationServices.firebaseInit(context);
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupinteractMessage(context);
     notificationServices.getDeviceToken().then((value) {
       print("token");
       print(value);
     });
-    user= FirebaseAuth.instance.currentUser;
+    user = FirebaseAuth.instance.currentUser;
   }
 
   @override
   Widget build(BuildContext context) {
+    final authBlocBlo = BlocProvider.of<AuthBlocBloc>(context);
     return Scaffold(
-        // backgroundColor: Color.fromARGB(255, 93, 201, 173),
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.white),
           actions: [
@@ -57,8 +68,7 @@ class _HomescreenState extends State<Homescreen> {
                 Icons.input_rounded,
               ),
               onPressed: () {
-                final AuthBlocBlo = BlocProvider.of<AuthBlocBloc>(context);
-                AuthBlocBlo.add(LogoutEvent());
+                authBlocBlo.add(LogoutEvent());
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (_) => const Loginscreenwrapp()),
@@ -66,7 +76,10 @@ class _HomescreenState extends State<Homescreen> {
               },
             )
           ],
-          title: const Text("STUwelt",style: TextStyle(fontWeight: FontWeight.bold),),
+          title: const Text(
+            "STUwelt",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           centerTitle: true,
           backgroundColor: const Color.fromARGB(255, 93, 201, 173),
         ),
@@ -84,46 +97,78 @@ class _HomescreenState extends State<Homescreen> {
                     builder: (BuildContext context,
                         AsyncSnapshot<DocumentSnapshot> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                            child:
-                                CircularProgressIndicator()); // Show loading indicator while fetching user data
+                        return const Center(child: CircularProgressIndicator());
                       }
                       if (snapshot.hasData) {
                         final studentData =
                             snapshot.data?.data() as Map<String, dynamic>?;
                         if (studentData != null) {
                           return DrawerHeader(
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage("assets/bck.jpeg"),
-                                  opacity: 0.6),
-                            ),
-                            child: UserAccountsDrawerHeader(
-                              decoration:
-                                  const BoxDecoration(color: Colors.transparent),
-                              accountName: Text(
-                                " ${studentData['username']}".toUpperCase(),
-                                style: const TextStyle(fontSize: 18),
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                    image: AssetImage("assets/bck.jpeg"),
+                                    opacity: 0.6),
                               ),
-                              accountEmail: Text(
-                                studentData['email'],
-                              ),
-                              currentAccountPictureSize: const Size.square(50),
-                              currentAccountPicture:
-                                  studentData['image'] != null
-                                  ? CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage:
-                                          NetworkImage(studentData['image']),
-                                    )
-                                  :
-                                  const CircleAvatar(
-                                child: Icon(Icons.person_3_outlined),
-                              ),
-                            ),
-                          );
+                              child:
+                               Container(
+                                decoration: const BoxDecoration(
+                                  border: Border(),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    studentData['image'] != null
+                                        ? CircleAvatar(
+                                            radius: 28,
+                                            backgroundImage: NetworkImage(
+                                                studentData['image']),
+                                          )
+                                        : const CircleAvatar(
+                                            child:
+                                                Icon(Icons.person_3_outlined),
+                                          ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 8,),
+                                      child: Text(
+                                        " ${studentData['username']}"
+                                            .toUpperCase(),
+                                        style: const TextStyle(fontSize: 16,color: Colors.white),
+                                      ),
+                                    ),
+                                    Text(
+                                      studentData['email'],style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              )
+                              // UserAccountsDrawerHeader(
+                              //   decoration: const BoxDecoration(border: Border(),
+                              //       color: Colors.transparent),
+                              //   accountName: Padding(
+                              //     padding: const EdgeInsets.only(top: 10),
+                              //     child: Text(
+                              //       " ${studentData['username']}".toUpperCase(),
+                              //       style: const TextStyle(fontSize: 16),
+                              //     ),
+                              //   ),
+                              //   accountEmail: Text(
+                              //     studentData['email'],
+                              //   ),
+                              //   currentAccountPictureSize: const Size.square(40),
+                              //   currentAccountPicture: studentData['image'] !=
+                              //           null
+                              //       ? CircleAvatar(
+                              //           radius: 30,
+                              //           backgroundImage:
+                              //               NetworkImage(studentData['image']),
+                              //         )
+                              //       : const CircleAvatar(
+                              //           child: Icon(Icons.person_3_outlined),
+                              //         ),
+                              // ),
+                              );
                         }
-                        ;
                       }
                       return Container();
                     }),
@@ -131,13 +176,17 @@ class _HomescreenState extends State<Homescreen> {
                   leading: const Icon(Icons.people_outline_outlined),
                   title: const Text(' Profile '),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const Profilepagewrapper()));
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.person_4_outlined),
                   title: const Text('Athlets'),
                   onTap: () {
+                    Navigator.pop(context);
                     // Navigator.push(context,
                     //     MaterialPageRoute(builder: (_) => const Profilepage()));
                   },
@@ -166,7 +215,12 @@ class _HomescreenState extends State<Homescreen> {
                         width: 180,
                         child: OutlinedButton(
                           onPressed: () async {
-                            // await signoutdialoge(context);
+                            authBlocBlo.add(LogoutEvent());
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const Loginscreenwrapp()),
+                                (route) => false);
                           },
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -190,7 +244,9 @@ class _HomescreenState extends State<Homescreen> {
             builder: (BuildContext context,
                 AsyncSnapshot<DocumentSnapshot> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: const CircularProgressIndicator()); // Show loading indicator while fetching user data
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               }
               if (snapshot.hasData) {
                 final studentData =
@@ -245,19 +301,27 @@ class _HomescreenState extends State<Homescreen> {
                                 width: MediaQuery.of(context).size.width * 0.82,
                                 child: Column(
                                   children: [
-                                     (studentData['image']==null)?const CircleAvatar(
-                                      backgroundColor: Colors.black12,
-                                      radius: 50,
-                                      child: Icon(
-                                        Icons.person_4_outlined,
-                                        size: 40,
-                                      ),
-                                    ):
-                                    CircleAvatar(radius: 50,backgroundImage: NetworkImage(studentData['image']),),
+                                    (studentData['image'] == null)
+                                        ? const CircleAvatar(
+                                            backgroundColor: Colors.black12,
+                                            radius: 50,
+                                            child: Icon(
+                                              Icons.person_4_outlined,
+                                              size: 40,
+                                            ),
+                                          )
+                                        : CircleAvatar(
+                                            radius: 50,
+                                            backgroundImage: NetworkImage(
+                                                studentData['image']),
+                                          ),
                                     Padding(
                                       padding: const EdgeInsets.all(6.0),
-                                      child: Text(" ${studentData['username']}"
-                                          .toUpperCase(),style: TextStyle(fontSize: 20),),
+                                      child: Text(
+                                        " ${studentData['username']}"
+                                            .toUpperCase(),
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
                                     ),
                                     Text(studentData['email'])
                                   ],

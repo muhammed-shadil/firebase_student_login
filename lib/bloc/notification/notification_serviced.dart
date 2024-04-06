@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_studentdata/view/screens/notificationscreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -42,15 +43,18 @@ class NotificationServices {
         InitializationSettings(android: androidInitializationSettings);
 
     await _flutterLocalNotificationsPlugin.initialize(initialializationSettings,
-        onDidReceiveNotificationResponse: (payload) {});
+        onDidReceiveNotificationResponse: (payload) {
+      handleMessage(context, message);
+    });
   }
 
   void firebaseInit(BuildContext context) {
     FirebaseMessaging.onMessage.listen((message) {
-      if (kDebugMode) {print(message.notification!.title.toString());
+      if (kDebugMode) {
+        print(message.notification!.title.toString());
         print(message.notification!.body.toString());
       }
-          if (Platform.isAndroid) {
+      if (Platform.isAndroid) {
         initLocalNotifications(context, message);
         showNotification(message);
       }
@@ -92,5 +96,30 @@ class NotificationServices {
     messaging.onTokenRefresh.listen((event) {
       event.toString();
     });
+  }
+
+  Future<void> setupinteractMessage(BuildContext context) async {
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      handleMessage(context, initialMessage);
+    }
+
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      handleMessage(context, event);
+    });
+  }
+
+  void handleMessage(BuildContext context, RemoteMessage message) {
+    if (message.data['type'] == 'message') {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => NotificationScreen(
+                    message1: message.notification!.title.toString(),
+                    message2: message.notification!.body.toString(),
+                  )));
+    }
   }
 }

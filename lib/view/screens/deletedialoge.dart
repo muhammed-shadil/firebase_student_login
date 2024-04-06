@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
 import 'package:firebase_studentdata/view/screens/loginscreen.dart';
 import 'package:firebase_studentdata/view/widgets/textfield1.dart';
@@ -33,82 +35,100 @@ class Deletescreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(" Deleting account"),
       ),
-      body: BlocBuilder<AuthBlocBloc, AuthBlocState>(
-        builder: (context, state) {
+      body: BlocListener<AuthBlocBloc, AuthBlocState>(
+        listener: (context, state) {
           if (state is Deletedstate) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (_) => const Loginscreenwrapp()),
                   (route) => false);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("your account has been deleted"),
+                  backgroundColor: Colors.red,
+                ),
+              );
             });
           }
-          return Container(
-            child: Form(
-              key: formKey,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Textfield1(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "please enter a valid email";
-                        } else if (!regemail.hasMatch(value)) {
-                          return "please enter a valid email";
-                        } else {
-                          return null;
-                        }
-                      },
-                      controller: _emailcontroller,
-                      hint: "Email",
-                      icon1: const Icon(Icons.email_outlined),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Textfield1(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "please enter a password";
-                        } else if (!paswd.hasMatch(value)) {
-                          return 'Password should contain at least one upper case, one lower case, one digit, one special character and  must be 8 characters in length';
-                        } else {
-                          return null;
-                        }
-                      },
-                      controller: _passwordcontroller,
-                      hint: "password",
-                      icon1: const Icon(Icons.class_outlined),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("cancel")),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {
-                              authbloc.add(DeletedEvent(
-                                  email: _emailcontroller.text,
-                                  password: _passwordcontroller.text));
-                            }
-                          },
-                          child: const Text("Delete")),
-                    ],
-                  )
-                ],
+          if (state is DeletedErrorstate) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(" Error!!,${state.msg}"),
+                backgroundColor: Colors.red[300],
               ),
-            ),
-          );
+            );
+          }
         },
+        child: BlocBuilder<AuthBlocBloc, AuthBlocState>(
+          builder: (context, state) {
+            return Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Textfield1(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "please enter a valid email";
+                          } else if (!regemail.hasMatch(value)) {
+                            return "please enter a valid email";
+                          } else {
+                            return null;
+                          }
+                        },
+                        controller: _emailcontroller,
+                        hint: "Email",
+                        icon1: const Icon(Icons.email_outlined),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Textfield1(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "please enter a password";
+                          } else if (!paswd.hasMatch(value)) {
+                            return 'Password should contain at least one upper case, one lower case, one digit, one special character and  must be 8 characters in length';
+                          } else {
+                            return null;
+                          }
+                        },
+                        controller: _passwordcontroller,
+                        hint: "password",
+                        icon1: const Icon(Icons.class_outlined),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        OutlinedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text("cancel")),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        OutlinedButton(
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                authbloc.add(DeletedEvent(
+                                    email: _emailcontroller.text,
+                                    password: _passwordcontroller.text));
+                              }
+                            },
+                            child: const Text("Delete")),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

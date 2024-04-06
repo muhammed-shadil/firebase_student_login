@@ -14,7 +14,7 @@ class AuthBlocBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
     on<CheckLoginStatusEvent>((event, emit) async {
       User? user;
       try {
-        await Future.delayed(Duration(seconds: 3), () {
+        await Future.delayed(const Duration(seconds: 3), () {
           user = _auth.currentUser;
         });
 
@@ -106,13 +106,15 @@ class AuthBlocBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
       }
     });
 
-    on<DeletedEvent>((event, emit) async{
+    on<DeletedEvent>((event, emit) async {
       try {
         User? user = await FirebaseAuth.instance.currentUser;
         AuthCredential UserCredential = EmailAuthProvider.credential(
             email: event.email, password: event.password);
 
-        await user!.reauthenticateWithCredential(UserCredential).then((value)async {
+        await user!
+            .reauthenticateWithCredential(UserCredential)
+            .then((value) async {
           await value.user!.delete().then((value) async {
             await FirebaseFirestore.instance
                 .collection("students")
