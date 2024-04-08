@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
 import 'package:firebase_studentdata/view/screens/loginscreen.dart';
+import 'package:firebase_studentdata/view/widgets/loading_indicator.dart';
 import 'package:firebase_studentdata/view/widgets/textfield1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +38,11 @@ class Deletescreen extends StatelessWidget {
       ),
       body: BlocListener<AuthBlocBloc, AuthBlocState>(
         listener: (context, state) {
-          if (state is Deletedstate) {
+          if (state is Deletedloadingstate) {
+            LoadingDialog.show(context);
+          }
+         else if (state is Deletedstate) {
+            LoadingDialog.hide(context);
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.pushAndRemoveUntil(
                   context,
@@ -45,7 +50,7 @@ class Deletescreen extends StatelessWidget {
                   (route) => false);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text("your account has been deleted"),
+                  content: Text("Your account has been deleted"),
                   backgroundColor: Colors.red,
                 ),
               );

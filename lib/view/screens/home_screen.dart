@@ -125,7 +125,7 @@ class _HomescreenState extends State<Homescreen> {
                                           )
                                         : const CircleAvatar(
                                             child:
-                                                Icon(Icons.person_3_outlined),
+                                                Icon(Icons.person_4_outlined),
                                           ),
                                     Padding(
                                       padding: const EdgeInsets.only(
@@ -137,7 +137,7 @@ class _HomescreenState extends State<Homescreen> {
                                       ),
                                     ),
                                     Text(
-                                      studentData['email'],style: TextStyle(color: Colors.white),
+                                      studentData['email'],style: const TextStyle(color: Colors.white),
                                     ),
                                   ],
                                 ),
@@ -183,7 +183,7 @@ class _HomescreenState extends State<Homescreen> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.person_4_outlined),
+                  leading: const Icon(Icons.sports),
                   title: const Text('Athlets'),
                   onTap: () {
                     Navigator.pop(context);
@@ -192,7 +192,7 @@ class _HomescreenState extends State<Homescreen> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.person_4_outlined),
+                  leading: const Icon(Icons.assignment),
                   title: const Text('project'),
                   onTap: () {
                     // Navigator.push(context,

@@ -33,6 +33,7 @@ class UpdationError extends AuthBlocState {
 }
 
 class Deletedstate extends AuthBlocState {}
+class Deletedloadingstate extends AuthBlocState{}
 
 class DeletedErrorstate extends AuthBlocState {
   final String msg;

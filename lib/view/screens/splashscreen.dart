@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
 import 'package:firebase_studentdata/view/screens/home_screen.dart';
@@ -25,14 +27,16 @@ class Splashscreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBlocBloc, AuthBlocState>(
-      listener: (context, state) {
-        if (state is Authenticated) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (_) => const Homescreenwrapper()));
-        } else if (state is UnAuthenticated) {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (_) => const Loginscreenwrapp()));
-        }
+      listener: (context, state) async {
+        Timer(const Duration(seconds: 3), () {
+          if (state is Authenticated) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (_) => const Homescreenwrapper()));
+          } else if (state is UnAuthenticated) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (_) => const Loginscreenwrapp()));
+          }
+        });
       },
       child: FlutterSplashScreen.fadeIn(
         duration: const Duration(seconds: 3),

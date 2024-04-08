@@ -146,13 +146,13 @@ class _ProfilepageState extends State<Profilepage> {
                                           icon: const Icon(Icons.phone_android),
                                         ),
                                         List1(
-                                          title: "age",
+                                          title: "Age",
                                           subtitle: studentData['age'],
                                           icon: const Icon(
                                               Icons.calendar_month_outlined),
                                         ),
                                         List1(
-                                          title: "school",
+                                          title: "School",
                                           subtitle: studentData['school'],
                                           icon: const Icon(Icons.school),
                                         ),
@@ -179,7 +179,7 @@ class _ProfilepageState extends State<Profilepage> {
                                                     } else if (state
                                                         is LocationLoaded) {
                                                       return List1(
-                                                        title: "loction",
+                                                        title: "Loction",
                                                         subtitle: studentData[
                                                                 'location'] ??
                                                             state.address,
@@ -191,7 +191,7 @@ class _ProfilepageState extends State<Profilepage> {
                                                   },
                                                 )
                                               : List1(
-                                                  title: "location",
+                                                  title: "Location",
                                                   subtitle:
                                                       studentData['location'],
                                                   icon: const Icon(

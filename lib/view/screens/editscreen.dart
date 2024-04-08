@@ -143,7 +143,7 @@ class _EditscreenState extends State<Editscreen> {
                             child: Column(
                               children: [
                                 Stack(children: [
-                                  (widget.studentDatas['image'] == null)
+                                  (studentData['image'] == null)
                                       ? (state is Uploadimageloading)
                                           ? const CircleAvatar(
                                               radius: 40,
@@ -207,7 +207,7 @@ class _EditscreenState extends State<Editscreen> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(7.0),
-                                  child: Textfield1(
+                                  child: Textfield1(keyboard: TextInputType.emailAddress,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return "Please enter a valid email";
@@ -224,7 +224,7 @@ class _EditscreenState extends State<Editscreen> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(7.0),
-                                  child: Textfield1(
+                                  child: Textfield1(keyboard: TextInputType.number,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return "Please enter the age ";
@@ -259,7 +259,7 @@ class _EditscreenState extends State<Editscreen> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(7.0),
-                                  child: Textfield1(
+                                  child: Textfield1(keyboard: TextInputType.number,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return "Please enter phone number";
@@ -283,7 +283,7 @@ class _EditscreenState extends State<Editscreen> {
                                           username: _namecontroller.text,
                                           // password: _passwordcontroller.text,
                                           uid: widget.studentDatas['uid'],
-                                          image: widget.studentDatas['image'],
+                                          image: studentData['image'],
                                           age: _agecontroller.text,
                                           email: _emailcontroller.text,
                                           phone: _phonecontroller.text,
