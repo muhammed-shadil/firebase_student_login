@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_studentdata/bloc/auth_bloc/bloc/auth_bloc_bloc.dart';
 import 'package:firebase_studentdata/bloc/imagebloc/bloc/image_bloc.dart';
 import 'package:firebase_studentdata/model/student_model.dart';
-import 'package:firebase_studentdata/view/screens/profilepage.dart';
 import 'package:firebase_studentdata/view/widgets/button1.dart';
 import 'package:firebase_studentdata/view/widgets/textfield1.dart';
 import 'package:flutter/material.dart';
@@ -187,13 +186,11 @@ class _EditscreenState extends State<Editscreen> {
                                 ]),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    child: Text(
-                                      widget.studentDatas['email'],
-                                      style: const TextStyle(
-                                          color: Color.fromARGB(
-                                              255, 106, 105, 105)),
-                                    ),
+                                  child: Text(
+                                    widget.studentDatas['email'],
+                                    style: const TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 106, 105, 105)),
                                   ),
                                 ),
                                 Padding(
@@ -210,23 +207,6 @@ class _EditscreenState extends State<Editscreen> {
                                     icon1: const Icon(Icons.person_4_outlined),
                                   ),
                                 ),
-                                // Padding(
-                                //   padding: const EdgeInsets.all(7.0),
-                                //   child: Textfield1(keyboard: TextInputType.emailAddress,
-                                //     validator: (value) {
-                                //       if (value == null || value.isEmpty) {
-                                //         return "Please enter a valid email";
-                                //       } else if (!regemail.hasMatch(value)) {
-                                //         return "Please enter a valid email";
-                                //       } else {
-                                //         return null;
-                                //       }
-                                //     },
-                                //     controller: _emailcontroller,
-                                //     hint: "Email",
-                                //     icon1: const Icon(Icons.email_outlined),
-                                //   ),
-                                // ),
                                 Padding(
                                   padding: const EdgeInsets.all(7.0),
                                   child: Textfield1(

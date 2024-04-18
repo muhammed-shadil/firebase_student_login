@@ -68,9 +68,7 @@ class _ProfilepageState extends State<Profilepage> {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                  child:
-                      CircularProgressIndicator()); 
+              return const Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasData) {
               final studentData =
@@ -206,9 +204,12 @@ class _ProfilepageState extends State<Profilepage> {
                                                     email:
                                                         studentData['email']));
                                           },
-                                          child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [Text("Fetch Location"),
-                                              const Icon(Icons.location_on),
+                                          child: const Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text("Fetch Location"),
+                                              Icon(Icons.location_on),
                                             ],
                                           ),
                                         ),

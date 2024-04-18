@@ -21,6 +21,7 @@ class SignupscreenWrapper extends StatelessWidget {
 
 class Signupscreen extends StatelessWidget {
   Signupscreen({super.key});
+
   final TextEditingController _emailcontroller = TextEditingController();
   final TextEditingController _passwordcontroller = TextEditingController();
   final TextEditingController _namecontroller = TextEditingController();
@@ -106,7 +107,8 @@ class Signupscreen extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(7.0),
-                      child: Textfield1(keyboard: TextInputType.emailAddress,
+                      child: Textfield1(
+                        keyboard: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Please enter a valid email";
@@ -123,7 +125,8 @@ class Signupscreen extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(7.0),
-                      child: Textfield1(keyboard:TextInputType.visiblePassword,
+                      child: Textfield1(
+                        keyboard: TextInputType.visiblePassword,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Please enter a password";
@@ -175,7 +178,8 @@ class Signupscreen extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(7.0),
-                      child: Textfield1(keyboard: TextInputType.phone,
+                      child: Textfield1(
+                        keyboard: TextInputType.phone,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Please enter phone number";

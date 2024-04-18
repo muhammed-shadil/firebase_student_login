@@ -2,9 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_studentdata/model/student_model.dart';
-import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
-
 part 'auth_bloc_event.dart';
 part 'auth_bloc_state.dart';
 
@@ -15,7 +13,7 @@ class AuthBlocBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
       User? user;
       try {
         // await Future.delayed(const Duration(seconds: 3), () {
-          user = _auth.currentUser;
+        user = _auth.currentUser;
         // });
 
         if (user != null) {
@@ -109,7 +107,7 @@ class AuthBlocBloc extends Bloc<AuthBlocEvent, AuthBlocState> {
     on<DeletedEvent>((event, emit) async {
       emit(Deletedloadingstate());
       try {
-        User? user = await FirebaseAuth.instance.currentUser;
+        User? user = FirebaseAuth.instance.currentUser;
         AuthCredential UserCredential = EmailAuthProvider.credential(
             email: event.email, password: event.password);
 

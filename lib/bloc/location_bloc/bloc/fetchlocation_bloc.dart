@@ -22,9 +22,9 @@ class FetchlocationBloc extends Bloc<FetchlocationEvent, FetchlocationState> {
                 .where('email', isEqualTo: event.email)
                 .get()
                 .then((value) {
-              value.docs.forEach((doc) {
+              for (var doc in value.docs) {
                 doc.reference.update({'location': address});
-              });
+              }
             });
           }
 

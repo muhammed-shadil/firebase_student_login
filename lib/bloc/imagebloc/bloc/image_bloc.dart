@@ -15,8 +15,8 @@ class ImageBloc extends Bloc<ImageEvent, ImageState> {
     on<Selectimage>((event, emit) async {
       emit(Uploadimageloading());
       try {
-        final ImagePicker _imagePicker = ImagePicker();
-        XFile? res = await _imagePicker.pickImage(source: ImageSource.gallery);
+        final ImagePicker imagePicker = ImagePicker();
+        XFile? res = await imagePicker.pickImage(source: ImageSource.gallery);
 
         if (res != null) {
           final memoryimg = await res.readAsBytes();
