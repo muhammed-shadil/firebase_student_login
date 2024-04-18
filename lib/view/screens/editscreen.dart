@@ -40,13 +40,11 @@ class Editscreen extends StatefulWidget {
 }
 
 class _EditscreenState extends State<Editscreen> {
-  final TextEditingController _emailcontroller = TextEditingController();
   final TextEditingController _namecontroller = TextEditingController();
   final TextEditingController _phonecontroller = TextEditingController();
   final TextEditingController _agecontroller = TextEditingController();
   final TextEditingController _schoolcontroller = TextEditingController();
 
-  final regemail = RegExp(r"^[a-zA-Z0-9_\-\.\S]{4,}[@][a-z]+[\.][a-z]{2,3}$");
   final phonreg = RegExp(r"^[6789]\d{9}$");
   final paswd =
       RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
@@ -57,7 +55,6 @@ class _EditscreenState extends State<Editscreen> {
 
   @override
   void initState() {
-    _emailcontroller.text = widget.studentDatas['email'];
     // _passwordcontroller.text = widget.studentDatas['email'];
     _namecontroller.text = widget.studentDatas['username'];
     _phonecontroller.text = widget.studentDatas['phone'];
@@ -189,51 +186,57 @@ class _EditscreenState extends State<Editscreen> {
                                   )
                                 ]),
                                 Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    child: Text(
+                                      widget.studentDatas['email'],
+                                      style: const TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 106, 105, 105)),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
                                   padding: const EdgeInsets.all(7.0),
                                   child: Textfield1(
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return "Please enter name";
-                                      } else if (!name.hasMatch(value)) {
-                                        return "Enter a valid name";
-                                      } else {
-                                        return null;
-                                      }
-                                    },
+                                    validator: (value) =>
+                                        (value == null || value.isEmpty)
+                                            ? "Please enter name"
+                                            : (!name.hasMatch(value))
+                                                ? "Enter a valid name"
+                                                : null,
                                     controller: _namecontroller,
                                     hint: "Name",
                                     icon1: const Icon(Icons.person_4_outlined),
                                   ),
                                 ),
+                                // Padding(
+                                //   padding: const EdgeInsets.all(7.0),
+                                //   child: Textfield1(keyboard: TextInputType.emailAddress,
+                                //     validator: (value) {
+                                //       if (value == null || value.isEmpty) {
+                                //         return "Please enter a valid email";
+                                //       } else if (!regemail.hasMatch(value)) {
+                                //         return "Please enter a valid email";
+                                //       } else {
+                                //         return null;
+                                //       }
+                                //     },
+                                //     controller: _emailcontroller,
+                                //     hint: "Email",
+                                //     icon1: const Icon(Icons.email_outlined),
+                                //   ),
+                                // ),
                                 Padding(
                                   padding: const EdgeInsets.all(7.0),
-                                  child: Textfield1(keyboard: TextInputType.emailAddress,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return "Please enter a valid email";
-                                      } else if (!regemail.hasMatch(value)) {
-                                        return "Please enter a valid email";
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                    controller: _emailcontroller,
-                                    hint: "Email",
-                                    icon1: const Icon(Icons.email_outlined),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(7.0),
-                                  child: Textfield1(keyboard: TextInputType.number,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return "Please enter the age ";
-                                      } else if (!age.hasMatch(value)) {
-                                        return "Please enter a valid age";
-                                      } else {
-                                        return null;
-                                      }
-                                    },
+                                  child: Textfield1(
+                                    keyboard: TextInputType.number,
+                                    validator: (value) =>
+                                        (value == null || value.isEmpty)
+                                            ? "Please enter the age"
+                                            : (!age.hasMatch(value))
+                                                ? "Please enter a valid age"
+                                                : null,
                                     controller: _agecontroller,
                                     hint: "Age",
                                     icon1: const Icon(
@@ -259,7 +262,8 @@ class _EditscreenState extends State<Editscreen> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(7.0),
-                                  child: Textfield1(keyboard: TextInputType.number,
+                                  child: Textfield1(
+                                    keyboard: TextInputType.number,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return "Please enter phone number";
@@ -275,6 +279,7 @@ class _EditscreenState extends State<Editscreen> {
                                     icon1: const Icon(Icons.phone),
                                   ),
                                 ),
+
                                 button1(
                                   btntext: "Update",
                                   onpressed: () {
@@ -285,7 +290,7 @@ class _EditscreenState extends State<Editscreen> {
                                           uid: widget.studentDatas['uid'],
                                           image: studentData['image'],
                                           age: _agecontroller.text,
-                                          email: _emailcontroller.text,
+                                          email: widget.studentDatas['email'],
                                           phone: _phonecontroller.text,
                                           location:
                                               widget.studentDatas['location'],

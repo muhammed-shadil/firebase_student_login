@@ -40,6 +40,7 @@ class Deletescreen extends StatelessWidget {
         listener: (context, state) {
           if (state is Deletedloadingstate) {
             LoadingDialog.show(context);
+            // loadingsheet(context);
           }
          else if (state is Deletedstate) {
             LoadingDialog.hide(context);

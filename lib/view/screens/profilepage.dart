@@ -198,7 +198,7 @@ class _ProfilepageState extends State<Profilepage> {
                                                       Icons.location_on),
                                                 ),
                                         ),
-                                        IconButton(
+                                        OutlinedButton(
                                           onPressed: () {
                                             BlocProvider.of<FetchlocationBloc>(
                                                     context)
@@ -206,7 +206,11 @@ class _ProfilepageState extends State<Profilepage> {
                                                     email:
                                                         studentData['email']));
                                           },
-                                          icon: const Icon(Icons.location_on),
+                                          child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [Text("Fetch Location"),
+                                              const Icon(Icons.location_on),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -214,7 +218,7 @@ class _ProfilepageState extends State<Profilepage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      OutlinedButton(
+                                      ElevatedButton(
                                           onPressed: () {
                                             Navigator.push(
                                                 context,
@@ -226,7 +230,7 @@ class _ProfilepageState extends State<Profilepage> {
                                       const SizedBox(
                                         width: 20,
                                       ),
-                                      OutlinedButton(
+                                      ElevatedButton(
                                           onPressed: () {
                                             Navigator.push(
                                                 context,

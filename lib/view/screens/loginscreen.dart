@@ -47,6 +47,7 @@ class Loginscreen extends StatelessWidget {
           child: BlocConsumer<AuthBlocBloc, AuthBlocState>(
             listener: (context, state) {
               if (state is AuthenticatedError) {
+                
                 LoadingDialog.hide(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -57,6 +58,7 @@ class Loginscreen extends StatelessWidget {
                 );
               } else if (state is AuthLoading) {
                 LoadingDialog.show(context);
+                // loadingsheet(context);
               } else if (state is Authenticated) {
                 LoadingDialog.hide(context);
                 WidgetsBinding.instance.addPostFrameCallback((_) {
